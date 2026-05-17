@@ -5,12 +5,7 @@ import type { Server, Socket } from "socket.io";
 import type { PrismaClient } from "@prisma/client";
 import { Player } from "./Player";
 import { WordManager } from "./WordManager";
-import type {
-  GamePhase,
-  PublicRoomState,
-  RoomSettings,
-  WordOption,
-} from "../types";
+import type { GamePhase, PublicRoomState, RoomSettings, WordOption } from "../types";
 
 interface ChatMessage {
   id: string;
@@ -111,7 +106,7 @@ export class Room {
     this.nextTurn();
   }
 
-  private nextTurn() {
+  private nextTurn(): void {
     if (this.drawQueue.length === 0) {
       this.round += 1;
       if (this.round > this.settings.rounds) return this.endGame();
@@ -170,11 +165,14 @@ export class Room {
     const total = this.settings.drawTime;
     for (let i = 1; i <= this.settings.hintCount; i++) {
       const at = Math.floor((total / (this.settings.hintCount + 1)) * i) * 1000;
-      const t = setTimeout(() => {
-        if (this.phase !== "drawing") return;
-        this.wordMask = WordManager.revealMore(this.word, this.wordMask, 1);
-        this.io.to(this.code).emit("room_patch", { wordMask: this.wordMask });
-      }, total * 1000 - at);
+      const t = setTimeout(
+        () => {
+          if (this.phase !== "drawing") return;
+          this.wordMask = WordManager.revealMore(this.word, this.wordMask, 1);
+          this.io.to(this.code).emit("room_patch", { wordMask: this.wordMask });
+        },
+        total * 1000 - at,
+      );
       this.revealTimers.push(t);
     }
   }
@@ -290,8 +288,7 @@ export class Room {
     }
 
     // "close" hint: same length, differs by 1 char (Levenshtein-1 lite)
-    const isClose =
-      guess.length === this.word.length && oneCharDiff(guess, this.word);
+    const isClose = guess.length === this.word.length && oneCharDiff(guess, this.word);
     if (isClose) {
       this.io.to(playerId).emit("chat_message", {
         id: cryptoId(),
