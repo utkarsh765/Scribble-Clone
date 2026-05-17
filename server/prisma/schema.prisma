@@ -1,0 +1,31 @@
+// Prisma schema for the Scribble Clone backend.
+// SQLite is used for simplicity; switch the provider to swap databases.
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+// Words available for rounds, grouped by category.
+model Word {
+  id       Int    @id @default(autoincrement())
+  text     String @unique
+  category String
+
+  @@index([category])
+}
+
+// Persisted match results so we can show history if we want to extend later.
+model MatchHistory {
+  id         String   @id @default(cuid())
+  roomCode   String
+  winnerName String
+  winnerScore Int
+  totalRounds Int
+  playerCount Int
+  createdAt  DateTime @default(now())
+}
