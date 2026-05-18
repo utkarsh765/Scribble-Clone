@@ -12,6 +12,7 @@ import { GameManager } from "./classes/GameManager";
 import { registerSocketHandlers } from "./socket/handlers";
 
 const PORT = Number(process.env.PORT ?? 4000);
+
 const ORIGINS = (process.env.CLIENT_ORIGIN ?? "http://localhost:8080,http://localhost:5173")
   .split(",")
   .map((s) => s.trim())
