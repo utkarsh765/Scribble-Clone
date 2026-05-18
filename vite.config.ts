@@ -8,7 +8,11 @@ import { cloudflare } from "@cloudflare/vite-plugin";
 
 export default defineConfig({
   plugins: [
-    cloudflare(),
+    cloudflare({
+      config: {
+        main: "dist/scribble_clone/index.js",
+      },
+    }),
     tanstackStart(),
     TanStackRouterVite({ autoCodeSplitting: true }),
     react(),
